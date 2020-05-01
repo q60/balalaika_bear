@@ -1,6 +1,9 @@
 defmodule BalalaikaBear.Request.HTTPClient do
+  require Logger
+
   alias BalalaikaBear.Request.Params
   @base_url "https://api.vk.com/method/"
+  @vk_api_version "5.103"
 
   def request_with_params(method, params, headers \\ %{}, body \\ []) do
     url = request_url(method, params)
@@ -8,14 +11,17 @@ defmodule BalalaikaBear.Request.HTTPClient do
   end
 
   def request(type, url, headers \\ %{}, body \\ [], options \\ []) do
-    {:ok, %HTTPoison.Response{status_code: code, body: body, headers: headers}} =
-      HTTPoison.request(type, url, body, headers, options)
+    case HTTPoison.request(type, url, body, headers, options) do
+      {:ok, %HTTPoison.Response{status_code: code, body: body, headers: headers}} ->
+        %{status_code: code, body: body, headers: headers} |> response
 
-    %{status_code: code, body: body, headers: headers} |> response
+      {:error, %HTTPoison.Error{id: _, reason: reason}} ->
+        Logger.error("BalalaikaBear.Request.HTTPClient error: #{reason}")
+    end
   end
 
   defp request_url(method, params) do
-    @base_url <> "#{method}?v=5.103&" <> Params.url_params(params)
+    @base_url <> "#{method}?v=#{@vk_api_version}&" <> Params.url_params(params)
   end
 
   defp response(%{status_code: code, body: body, headers: _}) do
