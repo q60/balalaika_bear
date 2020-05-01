@@ -15,7 +15,7 @@ defmodule BalalaikaBear.Request.HTTPClient do
   end
 
   defp request_url(method, params) do
-    @base_url <> "#{method}?" <> Params.url_params(params)
+    @base_url <> "#{method}?v=5.103&" <> Params.url_params(params)
   end
 
   defp response(%{status_code: code, body: body, headers: _}) do
