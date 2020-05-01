@@ -4,8 +4,8 @@ defmodule BalalaikaBear.Mixfile do
   def project do
     [
       app: :balalaika_bear,
-      version: "0.1.2",
-      elixir: "~> 1.6",
+      version: "0.1.3",
+      elixir: "~> 1.10.1",
       build_embedded: Mix.env() == :prod,
       start_permanent: Mix.env() == :prod,
       deps: deps(),
@@ -33,12 +33,12 @@ defmodule BalalaikaBear.Mixfile do
 
   defp deps do
     [
-      {:httpoison, "~> 1.0"},
-      {:poison, "~> 3.1"},
-      {:credo, "~> 0.9.1", only: [:dev, :test]},
-      {:mock, "~> 0.2.0", only: :test},
-      {:exvcr, "~> 0.7", only: :test},
-      {:ex_doc, "~> 0.14", only: :dev}
+      {:httpoison, "~> 1.6.2"},
+      {:jason, "~> 1.2"},
+      {:credo, "~> 1.4.0", only: [:dev, :test]},
+      {:mock, "~> 0.3.4", only: :test},
+      {:exvcr, "~> 0.11.1", only: :test},
+      {:ex_doc, "~> 0.21.3", only: :dev}
     ]
   end
 end

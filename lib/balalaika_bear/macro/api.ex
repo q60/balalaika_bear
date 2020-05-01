@@ -33,7 +33,7 @@ defmodule BalalaikaBear.Macro.API do
     %{^namespace => methods} =
       @methods_path
       |> File.read!()
-      |> Poison.decode!()
+      |> Jason.decode!()
 
     methods
   end

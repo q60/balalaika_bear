@@ -21,12 +21,12 @@ defmodule BalalaikaBear.Request.HTTPClient do
   defp response(%{status_code: code, body: body, headers: _}) do
     case code do
       200 -> parse_result(body)
-      _ -> {:error, Poison.decode!(body)}
+      _ -> {:error, Jason.decode!(body)}
     end
   end
 
   defp parse_result(body) do
-    body = Poison.decode!(body)
+    body = Jason.decode!(body)
 
     case body do
       %{"response" => response_map} ->
