@@ -1,4 +1,4 @@
-use Mix.Config
+import Config
 
 config :balalaika_bear,
   app_id: System.get_env("VK_APP_ID"),
