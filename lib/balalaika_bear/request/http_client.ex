@@ -3,7 +3,7 @@ defmodule BalalaikaBear.Request.HTTPClient do
 
   alias BalalaikaBear.Request.Params
   @base_url "https://api.vk.com/method/"
-  @vk_api_version "5.103"
+  @vk_api_version "5.131"
 
   def request_with_params(method, params, headers \\ %{}, body \\ []) do
     url = request_url(method, params)
