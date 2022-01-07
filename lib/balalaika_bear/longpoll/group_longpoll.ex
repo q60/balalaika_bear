@@ -1,26 +1,34 @@
 defmodule BalalaikaBear.Longpoll.GroupLongpoll do
-  def init(parent, %{group_id: id, access_token: token, v: version}) do
-    result = get_server(%{group_id: id, access_token: token, v: version})
-    response = connect(result["server"], result["key"], result["ts"])
+  def init(parent, data) do
+    result = get_server(data)
+    %{"server" => server, "key" => key, "ts" => ts} = result
+    response = connect(server, key, ts)
     send(parent, {:ok, response})
 
     process(
       response,
       result,
+      ts,
       parent,
-      %{group_id: id, access_token: token, v: version}
+      data
     )
   end
 
-  defp get_server(%{group_id: id, access_token: token, v: version}) do
-    {:ok, result} =
+  defp get_server(%{access_token: token, group_id: id, v: version}) do
+    server =
       BalalaikaBear.Groups.get_long_poll_server(%{
         group_id: id,
         access_token: token,
         v: version
       })
 
-    result
+    case server do
+      {:ok, result} ->
+        result
+
+      _ ->
+        get_server(%{access_token: token, group_id: id, v: version})
+    end
   end
 
   defp connect(server, key, ts) do
@@ -34,30 +42,43 @@ defmodule BalalaikaBear.Longpoll.GroupLongpoll do
       {:ok, %HTTPoison.Response{body: body}} ->
         Jason.decode!(body)
 
-      {:error, %HTTPoison.Error{reason: :timeout}} ->
+      _ ->
         connect(server, key, ts)
     end
   end
 
-  defp process(response, result, parent, data) do
-    response =
+  defp process(response, result, ts, parent, data) do
+    [response, result, ts] =
       case response["failed"] do
         1 ->
-          connect(result["server"], result["key"], response["ts"])
+          server = result["server"]
+          key = result["key"]
+          ts = response["ts"]
+          response = connect(server, key, ts)
+          send(parent, {:err, 1})
+          [response, result, ts]
 
         2 ->
           result = get_server(data)
-          connect(result["server"], result["key"], response["ts"])
+          %{"server" => server, "key" => key, "ts" => _} = result
+          response = connect(server, key, ts)
+          [response, result, ts]
 
         3 ->
           result = get_server(data)
-          connect(result["server"], result["key"], result["ts"])
+          %{"server" => server, "key" => key, "ts" => ts} = result
+          response = connect(server, key, ts)
+          [response, result, ts]
 
         _ ->
-          connect(result["server"], result["key"], response["ts"])
+          server = result["server"]
+          key = result["key"]
+          ts = response["ts"]
+          response = connect(server, key, ts)
+          send(parent, {:ok, response})
+          [response, result, ts]
       end
 
-    send(parent, {:ok, response})
-    process(response, result, parent, data)
+    process(response, result, ts, parent, data)
   end
 end

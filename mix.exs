@@ -4,7 +4,7 @@ defmodule BalalaikaBear.Mixfile do
   def project do
     [
       app: :balalaika_bear,
-      version: "0.2.0",
+      version: "0.2.1",
       elixir: "~> 1.13",
       build_embedded: Mix.env() == :prod,
       start_permanent: Mix.env() == :prod,
@@ -20,7 +20,9 @@ defmodule BalalaikaBear.Mixfile do
   end
 
   def application do
-    [applications: [:logger, :httpoison]]
+    [
+      extra_applications: [:logger, :httpoison, :jason]
+    ]
   end
 
   def package do
