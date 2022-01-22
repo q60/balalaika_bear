@@ -55,19 +55,21 @@ defmodule BalalaikaBear.Longpoll.GroupLongpoll do
           key = result["key"]
           ts = response["ts"]
           response = connect(server, key, ts)
-          send(parent, {:err, 1})
+          send(parent, {:ok, response})
           [response, result, ts]
 
         2 ->
           result = get_server(data)
           %{"server" => server, "key" => key, "ts" => _} = result
           response = connect(server, key, ts)
+          send(parent, {:ok, response})
           [response, result, ts]
 
         3 ->
           result = get_server(data)
           %{"server" => server, "key" => key, "ts" => ts} = result
           response = connect(server, key, ts)
+          send(parent, {:ok, response})
           [response, result, ts]
 
         _ ->
