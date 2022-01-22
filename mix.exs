@@ -4,7 +4,7 @@ defmodule BalalaikaBear.Mixfile do
   def project do
     [
       app: :balalaika_bear,
-      version: "0.2.2",
+      version: "0.2.3",
       elixir: "~> 1.13",
       build_embedded: Mix.env() == :prod,
       start_permanent: Mix.env() == :prod,
